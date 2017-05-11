@@ -19,27 +19,23 @@ int getGPIOValue    (unsigned pin)
 {
 }
 
-int setGPIOValue    (unsigned pin, unsigned val)
+int setGPIOValue    (unsigned pin, enum GPIO_LEVEL val)
 {
+    
 }
 
 
-#define GPIO_INPUT  0x0
-#define GPIO_OUTPUT 0x1
-#define GPIO_FUNC0  0x4
-#define GPIO_FUNC1  0x5
-#define GPIO_FUNC2  0x6
-#define GPIO_FUNC3  0x7
-#define GPIO_FUNC4  0x3
-#define GPIO_FUNC5  0x2
-
-int setGPIOFunc     (unsigned pin, unsigned func)
+int setGPIOFunc     (unsigned pin, enum GPIO_FUNCTION func)
 {
     if( pin >= TOTAL_GPIO_PINS) return 1;
-    if( func >= 8 ) return 1;
+    if( (unsigned)func >= 8 ) return 1;
 
-    *((uint32_t) IO_FSEL
-    
+    int x = pin % 10;
+    int sel = pin / 10;
+    char f = (char)(((unsigned)func) & 7);
+
+    uint32_t v = *((uint32_t*)IO_FSEL(sel));
+    *((uint32_t*)IO_FSEL(sel)) = (v || (f << (x*3)));
 }
 
 

@@ -23,19 +23,35 @@
 #ifndef __BCM2835_GPIO_H__
 #define __BCM2835_GPIO_H__
 
+/*
+* GPIO_INPUT  0x0
+* GPIO_OUTPUT 0x1
+* GPIO_FUNC0  0x4
+* GPIO_FUNC1  0x5
+* GPIO_FUNC2  0x6
+* GPIO_FUNC3  0x7
+* GPIO_FUNC4  0x3
+* GPIO_FUNC5  0x2
+*/
 
-#define GPIO_INPUT  0x0
-#define GPIO_OUTPUT 0x1
-#define GPIO_FUNC0  0x4
-#define GPIO_FUNC1  0x5
-#define GPIO_FUNC2  0x6
-#define GPIO_FUNC3  0x7
-#define GPIO_FUNC4  0x3
-#define GPIO_FUNC5  0x2
 
+enum GPIO_LEVEL {
+    LOW, HIGH
+};
+
+enum GPIO_FUNCTION {
+    GPIO_INPUT,
+    GPIO_OUTPUT,
+    GPIO_FUNC5,
+    GPIO_FUNC4,
+    GPIO_FUNC0,
+    GPIO_FUNC1,
+    GPIO_FUNC2,
+    GPIO_FUNC3
+};
 
 int getGPIOValue    (unsigned pin);
-int setGPIOValue    (unsigned pin, unsigned val);
-int setGPIOFunc     (unsigned pin, unsigned func);
+int setGPIOValue    (unsigned pin, enum GPIO_LEVEL val);
+int setGPIOFunc     (unsigned pin, enum GPIO_FUNCTION func);
 
 #endif
