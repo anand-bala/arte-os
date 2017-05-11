@@ -46,25 +46,33 @@ _start:
     /*
      * Vector table
      * NOTE: It will be remapped to RAM.
-     */
-    b   _reset          /* RESET */
-    b   .               /* UNDEFINED INSTRUCTION */
-    b   .               /* SOFTWARE INTERRUPT */
-    b   .               /* PREFETCH ABORT */
-    b   .               /* DATA ABORT */
-    b   .               /* RESERVED */
-    b   .               /* IRQ */
-    b   .               /* FIQ */
+    */
+    ldr pc, _reset_addr         /* RESET */
+    ldr pc, _undef_addr         /* UNDEFINED INSTRUCTION */
+    ldr pc, _swi_addr           /* SOFTWARE INTERRUPT */
+    ldr pc, _pabt_addr          /* PREFETCH ABORT */
+    ldr pc, _dabt_addr          /* DATA ABORT */
+    b   .                       /*RESERVED */
+    ldr pc, _irq_addr           /* IRQ */
+    ldr pc, _fiq_addr           /* FIQ */
+
+_reset_addr .word   _reset_handler
+_undef_addr .word   .
+_swi_addr   .word   .
+_pabt_addr  .word   .
+_dabt_addr  .word   .
+_irq_addr   .word   .
+_fiq_addr   .word   .
 
 
 /*
  * reset handler
  */
-_reset:
+_reset_handler:
     /*
      * Call platform dependent low level init
      */
-    ldr     r0, =_reset
+    ldr     r0, =_reset_handler
     ldr     r1, =_cstartup
     mov     lr, r1
     ldr     sp, =__stack_end__
@@ -75,9 +83,9 @@ _reset:
      */
 _cstartup:
     /* Relocate .fastcode section */
-    ldr     r0, =__fastcode_load
-    ldr     r1, =__fastcode_start
-    ldr     r2, =__fastcode_end
+    ldr     r0, =__fastcode_load__
+    ldr     r1, =__fastcode_start__
+    ldr     r2, =__fastcode_end__
 1:
     cmp     r1, r2
     ldrlt   r3, [r0], #4
@@ -85,9 +93,9 @@ _cstartup:
     blt     1b
 
      /* Relocate .data section */
-    ldr     r0, =__data_load
-    ldr     r1, =__data_start
-    ldr     r2, =_edata
+    ldr     r0, =__data_load__
+    ldr     r1, =__data_start__
+    ldr     r2, =__data_end__
 1:
     cmp     r1, r2
     ldrlt   r3, [r0], #4
