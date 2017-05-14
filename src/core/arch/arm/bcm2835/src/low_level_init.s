@@ -31,11 +31,14 @@
 
     /* Things that are initialized
      *
-     * 1. System 
+     * 1. System timer
+     * 2. Watchdog?
+     * 3. TODO
      */
 
 low_level_init:
-    
+
+    bx lr
 
 
 

@@ -42,3 +42,12 @@ clean_o:
 
 clean: clean_o
 	rm -f $(EXECUTABLE)
+
+
+emulate: $(EXECUTABLE)
+	qemu-system-arm -M versatilepb -cpu arm1176 -m 128M -nographic -kernel $(EXECUTABLE)
+
+emulate_dbg: $(BIN)
+	qemu-system-arm -M versatilepb -cpu arm1176 -m 128M -nographic -s -S -kernel $(EXECUTABLE)
+
+

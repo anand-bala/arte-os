@@ -4,48 +4,65 @@
 
 #define TOTAL_GPIO_PINS 54
 
-#define IO_FSEL(x)  (volatile unsigned*)(GPIO_BASE + 0x00 + (x)*4)
-#define IO_SET(x)   (volatile unsigned*)(GPIO_BASE + 0x1C + (x)*4)
-#define IO_CLR(x)   (volatile unsigned*)(GPIO_BASE + 0x28 + (x)*4)
-#define IO_LVL(x)   (volatile unsigned*)(GPIO_BASE + 0x28 + (x)*4)
+#define GPFSEL0 (volatile unsigned*)(GPIO_BASE + 0x00)
+#define GPFSEL1 (volatile unsigned*)(GPIO_BASE + 0x04)
+#define GPFSEL2 (volatile unsigned*)(GPIO_BASE + 0x08)
+#define GPFSEL3 (volatile unsigned*)(GPIO_BASE + 0x0C)
+#define GPFSEL4 (volatile unsigned*)(GPIO_BASE + 0x10)
+#define GPFSEL5 (volatile unsigned*)(GPIO_BASE + 0x14)
+
+#define GPFSEL(x)   (volatile unsigned*)(GPIO_BASE + 0x00 + (x)*4)
+
+#define GPSET0  (volatile unsigned*)(GPIO_BASE + 0x1C)
+#define GPSET1  (volatile unsigned*)(GPIO_BASE + 0x20)
+
+#define GPCLR0  (volatile unsigned*)(GPIO_BASE + 0x28)
+#define GPCLR1  (volatile unsigned*)(GPIO_BASE + 0x2C)
+
+#define GPLEV0  (volatile unsigned*)(GPIO_BASE + 0x34)
+#define GPLEV1  (volatile unsigned*)(GPIO_BASE + 0x38)
 
 
 
 void getGPIOPinBlock (unsigned* highGPIO, unsigned* lowGPIO)
 {
-    *highGPIO   = *(unsigned*)(IO_LVL(1));
-    *lowGPIO    = *(unsigned*)(IO_LVL(0));
+    *highGPIO   = *(unsigned*)(GPLEV1);
+    *lowGPIO    = *(unsigned*)(GPLEV0);
 }
 
 
 int getGPIOValue    (unsigned pin)
 {
     if( pin >= TOTAL_GPIO_PINS ) return -1;
-    
-    volatile unsigned* addr = IO_LVL(pin/32);
-    volatile unsigned mask = 0x1 << (pin%32);
-    return ((*addr) & (~mask)) >> (pin%32);
+
+    unsigned port = (pin >= 32) ? 1 : 0;
+    unsigned mask = 1 << (pin - (32*port));
+
+    volatile unsigned* addr = (port == 0) ? GPLEV0 : GPLEV1;
+    return ((*addr) & (~mask)) >> (pin - (32*port));
 }
 
 int setGPIOValue    (unsigned pin, enum GPIO_LEVEL val)
 {
-    if( pin >= TOTAL_GPIO_PINS) return -1;
 
-    volatile unsigned* addr = (val == 1) ? (IO_SET(pin/32)) : (IO_CLR(pin/32));
-    *addr = (1 << (pin%32));
+    if( pin >= TOTAL_GPIO_PINS ) return -1;
+    unsigned port = (pin >= 32) ? 1 : 0;
+    unsigned mask = 1 << (pin - (32*port));
+    volatile unsigned* addr = (val == 1) ? ((port == 0) ? GPSET0 : GPSET1) : ((port == 0) ? GPCLR0 : GPCLR1);
+    *addr = mask;
 }
 
 
 int setGPIOFunc     (unsigned pin, enum GPIO_FUNCTION func)
 {
-    if( pin >= TOTAL_GPIO_PINS) return -1;
+    if( pin >= TOTAL_GPIO_PINS ) return -1;
     if( (unsigned)func >= 8 ) return -1;
 
     int x = pin % 10;
     int sel = pin / 10;
     char f = (char)(((unsigned)func) & 7);
 
-    *(volatile unsigned*)(IO_FSEL(sel)) |= (f << (x*3));
+    *(volatile unsigned*)(GPFSEL(sel)) |= (f << (x*3));
 
     return 0;
 }
