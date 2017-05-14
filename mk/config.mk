@@ -5,7 +5,7 @@ LDFLAGS :=
 PLATFORM := bcm2835
 ARCH := arm
 
-include core/core.mk
-include user/user.mk
-include modules/modules.mk
+include src/core/core.mk
+include src/user/user.mk
+include src/modules/modules.mk
 
