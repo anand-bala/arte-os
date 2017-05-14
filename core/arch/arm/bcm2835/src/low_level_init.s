@@ -22,11 +22,11 @@
 
 
 /* CONSTANTS */
-    .equ    MAGIC_NUMBER    0x870884E   /* First few digits of PI after the decimal point */
+    .equ    MAGIC_NUMBER,    0x870884E   /* First few digits of PI after the decimal point */
 
     .text
     .arm
-    .globl  low_level_init
+    .global  low_level_init
     .func   low_level_init
 
     /* Things that are initialized

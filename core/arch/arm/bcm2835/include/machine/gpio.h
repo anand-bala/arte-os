@@ -36,7 +36,7 @@
 
 
 enum GPIO_LEVEL {
-    LOW, HIGH
+    PIN_LOW, PIN_HIGH
 };
 
 enum GPIO_FUNCTION {
@@ -50,8 +50,10 @@ enum GPIO_FUNCTION {
     GPIO_FUNC3
 };
 
+void getGPIOPinBlock(unsigned* highGPIO, unsigned* lowGPIO); 
 int getGPIOValue    (unsigned pin);
 int setGPIOValue    (unsigned pin, enum GPIO_LEVEL val);
 int setGPIOFunc     (unsigned pin, enum GPIO_FUNCTION func);
 
+// TODO: Event detection
 #endif

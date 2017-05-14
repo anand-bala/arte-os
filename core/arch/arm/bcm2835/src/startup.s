@@ -26,18 +26,19 @@
     .equ    I_BIT,      0x80    /* For IRQ */
     .equ    F_BIT,      0x40    /* For FIQ */
     .equ    USR_MODE,   0x10
-    .equ    FIQ_MODE,   0x11¬
-    .equ    IRQ_MODE,   0x12¬
-    .equ    SVC_MODE,   0x13¬
-    .equ    ABT_MODE,   0x17¬
-    .equ    UND_MODE,   0x1B¬
-    .equ    SYS_MODE,   0x1F¬
+    .equ    FIQ_MODE,   0x11
+    .equ    IRQ_MODE,   0x12
+    .equ    SVC_MODE,   0x13
+    .equ    ABT_MODE,   0x17
+    .equ    UND_MODE,   0x1B
+    .equ    SYS_MODE,   0x1F
 
+    .equ    STACK_FILL, 0xAAAAAAAA
 
 /**
  * Startup code
  */
-    .text
+    .section ".text.init"
     .arm
     .global _start
     .func   _start
@@ -56,13 +57,13 @@ _start:
     ldr pc, _irq_addr           /* IRQ */
     ldr pc, _fiq_addr           /* FIQ */
 
-_reset_addr .word   _reset_handler
-_undef_addr .word   .
-_swi_addr   .word   .
-_pabt_addr  .word   .
-_dabt_addr  .word   .
-_irq_addr   .word   .
-_fiq_addr   .word   .
+_reset_addr:    .word   _reset_handler
+_undef_addr:    .word   .
+_swi_addr:      .word   .
+_pabt_addr:     .word   .
+_dabt_addr:     .word   .
+_irq_addr:      .word   .
+_fiq_addr:      .word   .
 
 
 /*
@@ -82,17 +83,7 @@ _reset_handler:
      * NOTE: After return from low level init code, ROM is remapped to its linked addresses in RAM.
      */
 _cstartup:
-    /* Relocate .fastcode section */
-    ldr     r0, =__fastcode_load__
-    ldr     r1, =__fastcode_start__
-    ldr     r2, =__fastcode_end__
-1:
-    cmp     r1, r2
-    ldrlt   r3, [r0], #4
-    strlt   r3, [r1], #4
-    blt     1b
-
-     /* Relocate .data section */
+    /* Relocate .data section */
     ldr     r0, =__data_load__
     ldr     r1, =__data_start__
     ldr     r2, =__data_end__
@@ -143,12 +134,12 @@ _cstartup:
     ldr     sp, =__und_stack_top__
 
     msr     cpsr_c, #(SYS_MODE | I_BIT | F_BIT)
-    ldr     sp, =__sys_stack_top__
+    ldr     sp, =__c_stack_top__
 
     /* invoke static constructors */
-    ldr     ip, =__libc_init_array
-    mov     lr, pc      /* set return address */
-    bx      ip          /* run function. bx takes care of switch from ARM to THUMB */
+//    ldr     ip, =__libc_init_array
+//    mov     lr, pc      /* set return address */
+//    bx      ip          /* run function. bx takes care of switch from ARM to THUMB */
 
     ldr     ip, =main
     mov     lr, pc
