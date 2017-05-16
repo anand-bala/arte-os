@@ -1,6 +1,8 @@
 
 #include <machine/bcm2835_base.h>
 #include <machine/gpio.h>
+#include <stdint.h>
+
 
 #define TOTAL_GPIO_PINS 54
 
@@ -35,7 +37,7 @@ int getGPIOValue    (unsigned pin)
 {
     if( pin >= TOTAL_GPIO_PINS ) return -1;
 
-    unsigned port = (pin >= 32) ? 1 : 0;
+    uint32_t port = (pin >= 32) ? 1 : 0;
     unsigned mask = 1 << (pin - (32*port));
 
     volatile unsigned* addr = (port == 0) ? GPLEV0 : GPLEV1;

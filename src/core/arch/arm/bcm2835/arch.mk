@@ -8,6 +8,6 @@ srcs := $(wildcard $(src_dir)/*.c) $(wildcard $(src_dir)/*.s) $(wildcard $(src_d
 
 TARGET := arm-none-eabi-
 CFLAGS += -I$(includes)
-CFLAGS += -O2 -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s -nostartfiles -g -Wl,-T,$(current_dir)/kernel.ld
+CFLAGS += -O2 -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s -nostartfiles -Wl,--gc-sections -g -Wl,-T,$(current_dir)/kernel.ld --specs=nano.specs
 SOURCES += $(srcs)
 

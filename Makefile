@@ -25,6 +25,7 @@ $(LIST) : $(EXECUTABLE)
 	$(TARGET)objdump -d $(EXECUTABLE) > $(LIST)
 
 $(EXECUTABLE): $(OBJECTS)
+	@mkdir -p $(BUILD_DIR)
 	$(TARGET)gcc $(CFLAGS) $(OBJECTS) -o $(EXECUTABLE) $(LDFLAGS)
 
 %.o: %.c
