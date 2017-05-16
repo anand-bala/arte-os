@@ -15,27 +15,37 @@ EXECUTABLE := $(BUILD_DIR)kernel.elf
 LIST := $(BUILD_DIR)kernel.list
 MAP := $(BUILD_DIR)kernel.map
 BIN := $(BUILD_DIR)kernel.bin
+HEX := $(BUILD_DIR)kernel.hex
+IMG := $(BUILD_DIR)kernel.img
 
 all: $(BIN) $(LIST)
 
+rebuild: clean all
+
 $(BIN) : $(EXECUTABLE)
+	$(TARGET)objcopy $(EXECUTABLE) -O ihex $(HEX)
 	$(TARGET)objcopy $(EXECUTABLE) -O binary $(BIN)
+	$(TARGET)objcopy $(EXECUTABLE) -O binary $(IMG)
 
 $(LIST) : $(EXECUTABLE)
 	$(TARGET)objdump -d $(EXECUTABLE) > $(LIST)
 
 $(EXECUTABLE): $(OBJECTS)
 	@mkdir -p $(BUILD_DIR)
-	$(TARGET)gcc $(CFLAGS) $(OBJECTS) -o $(EXECUTABLE) $(LDFLAGS)
+	@printf "[%10s] $@\n" "BUILDING"
+	@$(TARGET)gcc $(CFLAGS) $(OBJECTS) -o $(EXECUTABLE) $(LDFLAGS)
 
 %.o: %.c
-	$(TARGET)gcc $(CFLAGS) -c $< -o $@
+	@printf "[%10s] $<\n" "COMPILING"
+	@$(TARGET)gcc $(CFLAGS) -c $< -o $@
 
 %.o: %.s
-	$(TARGET)gcc $(CFLAGS) -c $< -o $@
+	@printf "[%10s] $<\n" "COMPILING"
+	@$(TARGET)gcc $(CFLAGS) -c $< -o $@
 
 %.o: %.S
-	$(TARGET)gcc $(CFLAGS) -c $< -o $@
+	@printf "[%10s] $<\n" "COMPILING"
+	@$(TARGET)gcc $(CFLAGS) -c $< -o $@
 
 
 clean_o:
